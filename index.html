@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>翻牌遊戲</title>
+    <style>
+        #game{
+            width: 500px;
+            margin: auto;
+            position: relative;
+        }
+
+        .card{
+            width: 100px;
+            height: 180px;
+            /* 設定子元素在 3D 空間內 */
+            transform-style: preserve-3d;
+            position: absolute;
+            transition: transform 0.5s;
+            float: left;
+            margin: 10px;
+            top: 0;
+            left: 0;
+            transition: all 0.5s;
+        }
+
+        .btn{
+            position: absolute;
+            top: 80%;
+            left: 50%;
+        }
+        .open{
+            transform: rotateY(180deg);
+        }
+
+        .front{
+            width: 100%;
+            height: 100%;
+            background-image: url(./card/Red_back.jpg);
+            background-size: contain;
+            background-repeat: no-repeat;
+            position: absolute;
+
+        }
+
+        .back{
+            width: 100%;
+            height: 100%;
+            background-size: contain;
+            background-repeat: no-repeat;
+            position: absolute;
+            left: 0;
+            top: 0;
+            transform: rotateY(180deg);
+        }
+        .cardX0{
+            left: 0;
+        }
+        .cardX1{
+            left: 150px;
+        }
+        .cardX2{
+            left: 300px;
+        }
+        .cardX3{
+            left: 450px;
+        }
+        .cardY0{
+            top: 0;
+        }
+        .cardY1{
+            top: 180px;
+        }
+        .cardY2{
+            top: 360px;
+        }
+        .cardY3{
+            top: 540px;
+        }
+    </style>
+</head>
+<body>
+    <div id="game">
+        
+    </div>
+    <div class="btn">
+        <input type="button" value="cheat" id="cheat">
+        <input type="button" value="開始" id="start">
+    </div>
+    
+    <script src="jquery-3.4.1.min.js"></script>
+    <script>
+        $(function(){
+            for(let i = 0; i < 16; i++){
+                $("#game").append(/*html*/`
+                    <div class="card">
+                        <div class="front"></div>
+                        <div class="back"></div>
+                    </div>
+                `)
+            }
+            for(let i = 0; i < $(".card").length; i++){
+                /*
+                每個數字要有兩個才能消除
+                以16張牌來說，就有 8 個花色
+                以 1 / 8 的餘數來判斷要加哪張牌
+                因為牌號從 1 開始 ，所以要加 1
+                */
+                let add = i % ( $(".card").length / 2 ) + 1;
+                $(".card").eq(i).find(".back").css("background-image", `url(./card/${add}S.jpg)`);
+                $(".card").eq(i).attr("data-card", add);
+
+                // 隨機取一張牌，將他放在目前迴圈跑到的牌後
+                let target = Math.floor(Math.random() * $(".card").length );
+                $(".card").eq(target).insertAfter( $(".card").eq(i) );
+            }
+
+            $("#start").on("click", function(){
+                let num = 0;
+                for(let i = 0; i < 4; i++){
+                    for(let j = 0; j < 4; j++){
+                        $(".card").eq(num).addClass(`cardX${j}`).addClass(`cardY${i}`);
+                        num++;                     
+                    }
+
+                }
+            })
+            
+            
+            $(".card").on("click", function(){
+                if( $(".open").length < 2 && !$(this).hasClass("open")){
+                    $(this).addClass("open");
+                }
+
+                if($(".open").length === 2){
+                    
+                    setTimeout(()=>{
+                        $(".open").removeClass("open");
+                    }, 1000)
+
+                    if( $(".open").eq(0).attr("data-card") === $(".open").eq(1).attr("data-card")){
+                        
+                        $(".open").fadeTo(1000, 0).addClass("clear");
+                    }
+
+                    console.log($(".clear").length);
+                    if( $(".clear").length == $(".card").length){
+                        setTimeout(() => {
+                            alert("過關囉^_^");
+                            window.location.reload(true);
+                        }, 1000);
+                    }
+                }
+            })
+            $("#cheat").on("click", function(){
+                $(".front").css("opacity", "0.5");
+            })
+        })
+    </script>
+</body>
+</html>

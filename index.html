@@ -6,10 +6,15 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>翻牌遊戲</title>
     <style>
+        body{
+            background-image: url(./images/bg.jpg);
+            background-size: cover;
+        }
         #game{
             width: 500px;
             margin: auto;
             position: relative;
+            top: 100px;
         }
 
         .card{
@@ -27,8 +32,9 @@
         }
 
         .btn{
+            text-align: center;
             position: absolute;
-            top: 80%;
+            top: 90%;
             left: 50%;
         }
         .open{
@@ -38,7 +44,7 @@
         .front{
             width: 100%;
             height: 100%;
-            background-image: url(./card/Red_back.jpg);
+            background-image: url(./card/blue_back.jpg);
             background-size: contain;
             background-repeat: no-repeat;
             position: absolute;
@@ -86,8 +92,10 @@
         
     </div>
     <div class="btn">
-        <input type="button" value="cheat" id="cheat">
+        <div><span id="time">60</span>秒</div>
         <input type="button" value="開始" id="start">
+        <input type="button" value="重玩" id="reset">
+        <input type="button" value="cheat" id="cheat">
     </div>
     
     <script src="jquery-3.4.1.min.js"></script>
@@ -117,16 +125,29 @@
                 $(".card").eq(target).insertAfter( $(".card").eq(i) );
             }
 
+            
             $("#start").on("click", function(){
                 let num = 0;
+                let time = 60;
                 for(let i = 0; i < 4; i++){
                     for(let j = 0; j < 4; j++){
                         $(".card").eq(num).addClass(`cardX${j}`).addClass(`cardY${i}`);
                         num++;                     
                     }
-
                 }
+                let timer = setInterval(()=>{
+                    time--;
+                    $("#time").text(time);
+                    
+                    if( time == 0){
+                    clearInterval(timer);
+                    alert("遊戲結束！！");
+                    }
+
+                }, 1000);
+                
             })
+            
             
             
             $(".card").on("click", function(){
@@ -153,6 +174,9 @@
                         }, 1000);
                     }
                 }
+            })
+            $("#reset").on("click", function(){
+                window.location.reload(true);
             })
             $("#cheat").on("click", function(){
                 $(".front").css("opacity", "0.5");
